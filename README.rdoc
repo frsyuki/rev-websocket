@@ -40,7 +40,7 @@ This library conforms to WebSocket draft-75 and draft-76.
     server = Rev::WebSocketServer.new(host, port, MyConnection)
     server.attach(Rev::Loop.default)
     
-    Rev::Loop.run
+    Rev::Loop.default.run
 
 
 == Learn more
