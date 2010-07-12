@@ -87,7 +87,7 @@ module Rev
 
 			return false unless @http11.finished?
 
-			@data.read(@http11_nbytes)
+			@data.read(@http11_nbytes-1)
 			remove_instance_variable(:@http11)
 			remove_instance_variable(:@http11_nbytes)
 
@@ -118,7 +118,10 @@ module Rev
 
 			rescue
 				on_bad_request
+				return false
 			end
+
+			return true
 		end
 
 		def on_bad_request

@@ -33,12 +33,7 @@ module Rev
 			end
 
 			def process_challenge_response
-				return false if @data.size < 10
-
-				crln = @data.read(2)  # read \r\n bytes
-				if crln != "\r\n"
-					raise RuntimeError, "invalid request"
-				end
+				return false if @data.size < 8
 
 				key_3 = @data.read(8)
 

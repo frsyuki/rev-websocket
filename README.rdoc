@@ -8,7 +8,7 @@ This library conforms to WebSocket draft-75 and draft-76.
 - http://github.com/frsyuki/rev-websocket
 
 
-== Simple example
+== Installation
 
     gem install rev-websocket
 
