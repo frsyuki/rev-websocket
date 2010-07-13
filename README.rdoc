@@ -13,7 +13,9 @@ This library conforms to WebSocket draft-75 and draft-76.
     gem install rev-websocket
 
 
-== Simple example
+== Examples
+
+== Simple echo server
 
     require 'rubygems'
     require 'rev/websocket'
@@ -39,6 +41,65 @@ This library conforms to WebSocket draft-75 and draft-76.
     
     server = Rev::WebSocketServer.new(host, port, MyConnection)
     server.attach(Rev::Loop.default)
+    
+    Rev::Loop.default.run
+
+
+== Publisher/Subscriber-style message routing
+    require 'rubygems'
+    require 'rev/websocket'
+    
+    class PubSub
+      def initialize
+        @subscriber = {}
+        @seqid = 0
+      end
+    
+      def subscribe(&block)
+        sid = @seqid += 1
+        @subscriber[sid] = block
+        return sid
+      end
+    
+      def unsubscribe(key)
+        @subscriber.delete(key)
+      end
+    
+      def publish(data)
+        @subscriber.each_value {|block|
+          block.call(data)
+        }
+      end
+    end
+    
+    $pubsub = PubSub.new
+    
+    class MyConnection < Rev::WebSocket
+      def on_open
+        puts "WebSocket opened"
+        @sid = $pubsub.subscribe {|data|
+          send_message data
+        }
+      end
+    
+      def on_message(data)
+        puts "WebSocket data received, broadcasting: '#{data}'"
+        $pubsub.publish(data)
+      end
+    
+      def on_close
+        puts "WebSocket closed"
+        $pubsub.unsubscribe(@sid)
+      end
+    end
+    
+    host = '0.0.0.0'
+    port = ARGV[0] || 8080
+    
+    server = Rev::WebSocketServer.new(host, port, MyConnection)
+    server.attach(Rev::Loop.default)
+    
+    puts "start on #{host}:#{port}"
     
     Rev::Loop.default.run
 
