@@ -77,6 +77,13 @@ module Rev
 			return false if @data.empty?
 
 			data = @data.to_str
+
+			if data == "<policy-file-request/>\0"
+				write_policy_file
+				@state = :invalid_state
+				return false
+			end
+
 			begin
 				@http11_nbytes = @http11.execute(@request, data, @http11_nbytes)
 			rescue
@@ -199,6 +206,10 @@ module Rev
 			on_message(msg)
 
 			return true
+		end
+
+		def write_policy_file
+			write %[<cross-domain-policy><allow-access-from domain="*" to-ports="*"/></cross-domain-policy>\0]
 		end
 
 		def ssl?
