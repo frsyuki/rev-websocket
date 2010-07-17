@@ -1,4 +1,9 @@
 
+2010-07-17 version 0.1.2:
+
+  * sends <cross-domain-policy> on <policy-file-request> to accept Flash-based clients
+  * adds examples
+
 2010-07-13 version 0.1.1:
 
   * fixes compatibility with Chrome 6 (draft-76)

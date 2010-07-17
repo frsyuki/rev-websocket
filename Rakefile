@@ -9,6 +9,8 @@ begin
 		gemspec.email = "frsyuki@users.sourceforge.jp"
 		gemspec.homepage = "http://github.com/frsyuki/rev-websocket"
 		gemspec.authors = ["FURUHASHI Sadayuki"]
+		gemspec.files.include "examples/**/*"
+		gemspec.files.exclude ".gitignore"
 		gemspec.add_dependency("rev", ">= 0.3.2")
 		gemspec.add_dependency("thin", '>= 1.2.7')
 	end
