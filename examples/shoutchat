@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+
+fork {
+	load 'shoutchat.rb'
+	exit 0
+}
+
+require 'webrick'
+
+server = WEBrick::HTTPServer.new({
+	:Port => 8080,
+	:BindAddress => '127.0.0.1',
+	:DocumentRoot => File.dirname(__FILE__)+'/public'})
+
+trap('INT') { server.shutdown }
+
+server.start
+

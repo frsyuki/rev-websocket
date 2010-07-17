@@ -1,0 +1,63 @@
+
+body {
+	overflow: hidden;
+	padding: 7px;
+	margin: 0;
+	font-family: serif;
+}
+
+#screen {
+	margin: 0;
+	padding: 0;
+}
+
+#screen li {
+	padding: 0;
+	margin: 0;
+	font-weight: bold;
+	list-style-type: none;
+}
+
+#control {
+	width: 14em;
+	border: 2px solid #f09090;
+	background-color: #fffcf9;
+	padding: 0.9em 1em 0.4em 1em;
+	font-family: sans-serif;
+}
+
+#input {
+	width: 10em;
+	font-size: 130%;
+	font-weight: bold;
+	margin: 0.3em 0.2em 0.9em -0.1em;
+	padding: 0 0 0 0.2em;
+	height: 1.5em;
+}
+
+#control p {
+	font-size: 85%;
+	margin: 0 0 1em 0;
+	line-height: 100%;
+}
+
+#control p a {
+	margin-right: 0.5em;
+}
+
+a {
+	color: red;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+#users:before {
+	content: "user: ";
+}
+
+#status:before {
+	content: "status: ";
+}
+

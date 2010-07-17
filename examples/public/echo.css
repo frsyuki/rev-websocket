@@ -1,0 +1,11 @@
+
+.time {
+	color: #007010;
+	margin-right: 0.2em;
+	padding-right: 0.2em;
+}
+
+.time:after {
+	content: ":";
+}
+

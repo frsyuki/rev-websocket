@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta content="text/css" http-equiv="content-style-type" />
+	<meta content="text/javascript" http-equiv="content-script-type" />
+
+	<script type="text/javascript" src='js/jquery.min.js'></script>
+	<script type="text/javascript" src='js/swfobject.js'></script>
+	<script type="text/javascript" src='js/FABridge.js'></script>
+	<script type="text/javascript" src='js/web_socket.js'></script>
+	<script type="text/javascript" src='js/json2.js'></script>
+	<link rel="stylesheet" type="text/css" href="shoutchat.css" />
+
+	<title>Rev-WebSocket Demo: ShoutChat</title>
+
+	<script>
+	WS_URL = "ws://localhost:8081";
+	WEB_SOCKET_SWF_LOCATION = "js/WebSocketMain.swf";
+
+	var global = this;
+
+	$(document).ready(function(){
+
+		function setStatus(message) {
+			$("#status").text(message);
+		}
+
+		setStatus("connecting...");
+		ws = new WebSocket(WS_URL);
+
+		ws.onopen = function() {
+			setStatus("connected.");
+		}
+
+		ws.onclose = function() {
+			setStatus("disconnected...");
+		}
+
+		ws.onerror = function(msg) {
+			setStatus("failed to connect："+msg);
+		}
+
+		ws.onmessage = function(event) {
+			obj = JSON.parse(event.data);
+			data = obj[1];
+			switch(obj[0]) {
+			case "count":
+				setCount(data);
+				break;
+			case "message":
+				renderMessage(data);
+				break;
+			}
+		}
+
+		function sendMessage(method, data) {
+			ws.send(JSON.stringify([method, data]));
+		}
+
+		function setCount(count) {
+			$("#users").html(count);
+		}
+
+		function renderMessage(params) {
+			var text = params.message;
+
+			var size = Math.floor(20 * text.length / params.tsec);
+			if(size > 1500) { size = 1500; }
+			else if(size < 70) { size = 70; }
+
+			var dh = $(window).height();
+			var dw  = $(window).width();
+			var tw = text.length * size / 25;
+			var th = size / 30;
+			var x = dw * params.randX - tw/2;
+			var y = dh * params.randY - th/2;
+			if(x < 0) { x = 0; } else if(x > dw - tw) { x -= tw; }
+			if(y < 0) { y = 0; } else if(y > dh - th) { y -= th; }
+
+			var screen = $("#screen");
+
+			screen.append(
+				$('<li>')
+					.css('position', 'absolute')
+					.css('left', ''+Math.floor(x)+'px')
+					.css('top',  ''+Math.floor(y)+'px')
+					.css('font-size', ''+size+'%')
+					.text(text));
+
+			var children = screen.children();
+
+			while(children.size() > 20) {
+				children.first().remove();
+				children = screen.children();
+			}
+
+			var size = children.size();
+			var step = 255.0 / size;
+			for(var i=0; i < size; i++) {
+				var base = Math.floor(step*(size-i-1));
+				function c() {
+					var s = (1.0 + Math.random() / 2.0) * base;
+					if(s > 255) { s = 255; }
+					return Math.floor(s);
+				}
+				var e = children.eq(i);
+				e.css("color", "rgb("+c()+","+c()+","+c()+")");
+				e.css("opacity", ''+((i+1)/size));
+			}
+		}
+
+		var beforeTime = new Date();
+
+		global.submitMessage = function() {
+			var input = $("#input");
+			if(input.val() != "") {
+				currentTime = new Date();
+				var tsec = (currentTime - beforeTime) / 60 / 60;
+				beforeTime = currentTime;
+				sendMessage("message", {
+					message: input.val(),
+					randX: Math.random(),
+					randY: Math.random(),
+					tsec: tsec
+				});
+				input.val("");
+			}
+			return false;
+		}
+	});
+	</script>
+</head>
+<body>
+	<div id="control">
+		<form action="#" onsubmit="return submitMessage();">
+			<input type="text" name="input" id="input" value="ShoutChat!" />
+		</form>
+		<p id="users"></p>
+		<p id="status"></p>
+		<p>
+			<a href="/shoutchat.html" target="_blank">Open new tab</a>
+			<a href="http://github.com/frsyuki/rev-websocket">Source</a>
+		</p>
+	</div>
+
+	<ul id="screen"></ul>
+</body>
