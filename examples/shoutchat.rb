@@ -41,8 +41,7 @@ $record = []
 
 class ShoutChatConnection < Rev::WebSocket
 	def on_open
-		@host = request['HTTP_HOST']
-		return unless @host
+		@host = peeraddr[2]
 		puts "connection opened: <#{@host}>"
 
 		@sid = $pubsub.subscribe {|data|
@@ -53,7 +52,7 @@ class ShoutChatConnection < Rev::WebSocket
 	end
 
 	def on_message(data)
-		puts "broadcasting: <#{@host}> #{data}"
+		puts "broadcasting: <#{@host}> '#{data}'"
 
 		$pubsub.publish(data)
 		$record.push(data)
@@ -61,7 +60,6 @@ class ShoutChatConnection < Rev::WebSocket
 	end
 
 	def on_close
-		return unless @host
 		puts "connection closed: <#{@host}>"
 
 		$pubsub.unsubscribe(@sid)

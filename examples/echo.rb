@@ -5,7 +5,7 @@ require 'rev/websocket'
 
 class EchoConnection < Rev::WebSocket
 	def on_open
-		puts "WebSocket opened"
+		puts "WebSocket opened from '#{peeraddr[2]}': request=#{request.inspect}"
 		send_message("server: Hello, world!")
 	end
 

@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+fork {
+	load 'rpc.rb'
+	exit 0
+}
+
+require 'rubygems'
+require 'sinatra'
+require 'msgpack/rpc'
+
+rpc_port = 18800
+$ws = MessagePack::RPC::Client.new('127.0.0.1', rpc_port)
+
+get '/' do
+	erb :rpc
+end
+
+post '/push' do
+	data = {'Hello'=>'World!', 'data' => params}
+	$ws.call(:push_data, data)
+	redirect '/', 303
+end
+
+set :port, 8080
+
