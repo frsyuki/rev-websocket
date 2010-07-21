@@ -61,6 +61,12 @@ module Rev
 			@request = {DummyIO::KEY => DummyIO.new}
 		end
 
+		def on_readable
+			super
+		rescue
+			close
+		end
+
 		def on_read(data)
 			@data << data
 			dispatch
